@@ -1,0 +1,144 @@
+CrazyTimeDKWin/
+│
+├── app/
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/com/example/dkwinstylecrazytime/
+│   │       │   └── MainActivity.kt
+│   │       └── res/
+│   │           ├── layout/
+│   │           │   └── activity_main.xml
+│   │           └── drawable/
+│   │               └── wheel_image.png
+│   └── build.gradle
+├── build.gradle
+└── settings.gradlepackage com.example.dkwinstylecrazytime
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import android.widget.ImageView
+import android.view.animation.RotateAnimation
+import android.view.animation.Animation
+import kotlin.random.Random
+import android.os.Handler
+import android.os.Looper
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var spinButton: Button
+    private lateinit var resultText: TextView
+    private lateinit var wheelImage: ImageView
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val segments = 12
+    private val segmentNames = (1..segments).map { it.toString() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        spinButton = findViewById(R.id.spinButton)
+        resultText = findViewById(R.id.resultText)
+        wheelImage = findViewById(R.id.wheelImage)
+
+        spinButton.setOnClickListener {
+            spinWheel()
+        }
+    }
+
+    private fun spinWheel() {
+        val predictedIndex = Random.nextInt(segments)
+        val predictedSegment = segmentNames[predictedIndex]
+
+        // 2 সেকেন্ড আগে Prediction দেখানো
+        resultText.text = "🔮 Prediction: $predictedSegment"
+
+        handler.postDelayed({
+            val randomRotation = 360 * 5 + predictedIndex * (360 / segments)
+            val rotateAnim = RotateAnimation(
+                0f, randomRotation.toFloat(),
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f
+            )
+            rotateAnim.duration = 3000
+            rotateAnim.fillAfter = true
+            rotateAnim.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {}
+                override fun onAnimationEnd(animation: Animation?) {
+                    resultText.text = "🎯 Result: $predictedSegment"
+                }
+                override fun onAnimationRepeat(animation: Animation?) {}
+            })
+            wheelImage.startAnimation(rotateAnim)
+        }, 2000)
+    } <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="#121212">
+
+    <ImageView
+        android:id="@+id/wheelImage"
+        android:src="@drawable/wheel_image"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:id="@+id/resultText"
+        android:text="🎰 DKWin Crazy Time"
+        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="#1E1E1E"
+        android:elevation="4dp"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/spinButton"
+        android:text="Spin Wheel"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="#FF5722"
+        android:textColor="#FFFFFF"
+        android:elevation="4dp"/>
+</LinearLayout> plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.dkwinstylecrazytime"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+}
+} rootProject.name = "CrazyTimeDKWin"
+include ':app'
